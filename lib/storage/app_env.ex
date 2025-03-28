@@ -3,17 +3,13 @@ defmodule DefDeps.Storage.AppEnv do
 
   @impl true
   def get_callbacks_module(behaviour_module) do
-    Application.fetch_env!(:def_deps, :app_name)
-    |> Application.get_env(:__deps__, %{})
+    Application.get_env(:def_deps, :__deps__, %{})
     |> Access.get(behaviour_module)
   end
 
   @impl true
   def put_callbacks_module(behaviour_module, callbacks_module) do
-    deps =
-      Application.fetch_env!(:def_deps, :app_name)
-      |> Application.get_env(:__deps__, %{})
-
+    deps = Application.get_env(:def_deps, :__deps__, %{})
     Application.put_env(:def_deps, :__deps__, Map.put(deps, behaviour_module, callbacks_module))
   end
 
