@@ -45,7 +45,7 @@ defmodule DefDeps do
   def defmocks(mock_module) do
     Storage.get_behaviours()
     |> Enum.each(fn behaviour ->
-      mock = String.to_atom("#{behaviour}Mock")
+      mock = String.to_atom("#{behaviour}#{mocks_postfix()}")
       mock_module.defmock(mock, for: behaviour)
 
       Storage.put_callbacks_module(behaviour, mock)
@@ -55,6 +55,10 @@ defmodule DefDeps do
   @spec service(behaviour_module(), callbacks_module()) :: callbacks_module()
   def service(key, default) do
     Storage.get_callbacks_module(key) || default
+  end
+
+  defp mocks_postfix do
+    Application.get_env(:def_deps, :mocks_postfix, "Mock")
   end
 
   defp get_working_implementation(default_impl, callbacks_module) do
