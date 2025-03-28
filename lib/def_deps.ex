@@ -42,7 +42,8 @@ defmodule DefDeps do
     end
   end
 
-  def defmocks(mock_module) do
+  @spec defmocks(library: library :: Mox | Hammox) :: :ok
+  def defmocks(library: mock_module) do
     Storage.get_behaviours()
     |> Enum.each(fn behaviour ->
       mock = String.to_atom("#{behaviour}#{mocks_postfix()}")

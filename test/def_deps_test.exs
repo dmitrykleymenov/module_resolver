@@ -115,7 +115,7 @@ defmodule DefDepsTest do
         assert expected_implementations[behaviour] == mock
       end)
 
-      DefDeps.defmocks(Mox)
+      DefDeps.defmocks(library: Mox)
     end
   end
 end
