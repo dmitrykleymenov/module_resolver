@@ -18,7 +18,7 @@ defmodule DefDeps do
     implementation =
       env.module
       |> Module.delete_attribute(:__def_deps_options__)
-      |> Keyword.fetch!(:impl)
+      |> Keyword.get(:default, Module.concat(env.module, Default))
       |> get_working_implementation(env.module)
       |> Macro.escape()
 

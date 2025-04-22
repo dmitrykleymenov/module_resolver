@@ -35,7 +35,11 @@ defmodule DefDeps.Storage.AppEnvTest do
 
   describe "get_behaviours/0" do
     test "returns all behaviours which used DefDeps" do
-      assert AppEnv.get_behaviours() == [DefDepsTest.TestOnlyDefaultBehaviour, DefDepsTest.TestBehaviour]
+      assert AppEnv.get_behaviours() == [
+               DefDepsTest.TestOnlyDefaultBehaviour,
+               DefDepsTest.TestNoOptsBehaviour,
+               DefDepsTest.TestBehaviour
+             ]
     end
   end
 

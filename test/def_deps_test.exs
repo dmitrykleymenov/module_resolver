@@ -8,16 +8,24 @@ defmodule DefDepsTest do
   setup :verify_on_exit!
 
   defmodule TestBehaviour do
-    use DefDeps, impl: MockDefaultImpl
+    use DefDeps, default: MockDefaultImpl
 
     @callback init() :: {:ok, integer}
     @callback succ(integer) :: :ok
   end
 
+  defmodule TestNoOptsBehaviour do
+    use DefDeps
+
+    @callback init() :: {:ok, integer}
+  end
+
+  Mox.defmock(DefDepsTest.TestNoOptsBehaviour.Default, for: TestNoOptsBehaviour)
+
   Application.put_env(:def_deps, :only_default_impl, true)
 
   defmodule TestOnlyDefaultBehaviour do
-    use DefDeps, impl: MockDefaultImpl
+    use DefDeps, default: MockDefaultImpl
 
     @callback init() :: {:ok, integer}
     @callback succ(integer) :: :ok
@@ -50,6 +58,21 @@ defmodule DefDepsTest do
       |> expect(:init, fn -> num end)
 
       assert TestBehaviour.init() == num
+    end
+
+    test "uses Default module when the `default` option isn't set" do
+      num = :rand.uniform(9999)
+
+      MockStorage
+      |> expect(:get_callbacks_module, fn module ->
+        assert module == TestNoOptsBehaviour
+        nil
+      end)
+
+      DefDepsTest.TestNoOptsBehaviour.Default
+      |> expect(:init, fn -> num end)
+
+      assert TestNoOptsBehaviour.init() == num
     end
 
     test "setups requests forwarding to stored implementation" do
@@ -107,7 +130,7 @@ defmodule DefDepsTest do
       }
 
       MockStorage
-      |> expect(:get_behaviours, fn->
+      |> expect(:get_behaviours, fn ->
         [TestBehaviour, TestOnlyDefaultBehaviour]
       end)
       |> expect(:put_callbacks_module, 2, fn behaviour, mock ->
