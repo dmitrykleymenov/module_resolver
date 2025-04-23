@@ -5,9 +5,8 @@ defmodule DefDeps do
   @type callbacks_module :: module()
 
   defmacro __using__(opts) do
-    Storage.add_behaviour(__CALLER__.module)
-
     quote do
+      DefDeps.Storage.add_behaviour(__MODULE__)
       Module.put_attribute(__MODULE__, :__def_deps_options__, unquote(opts))
 
       @before_compile unquote(__MODULE__)
