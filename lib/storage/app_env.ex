@@ -12,14 +12,4 @@ defmodule DefDeps.Storage.AppEnv do
     deps = Application.get_env(:def_deps, :__deps__, %{})
     Application.put_env(:def_deps, :__deps__, Map.put(deps, behaviour_module, callbacks_module))
   end
-
-  @impl true
-  def add_behaviour(behaviour_module) do
-    Application.put_env(:def_deps, :__behaviours__, [behaviour_module | get_behaviours()])
-  end
-
-  @impl true
-  def get_behaviours() do
-    Application.get_env(:def_deps, :__behaviours__, [])
-  end
 end

@@ -6,7 +6,6 @@ defmodule DefDeps do
 
   defmacro __using__(opts) do
     quote do
-      DefDeps.Storage.add_behaviour(__MODULE__)
       Module.put_attribute(__MODULE__, :__def_deps_options__, unquote(opts))
 
       @before_compile unquote(__MODULE__)
@@ -41,10 +40,9 @@ defmodule DefDeps do
     end
   end
 
-  @spec defmocks(library: library :: Mox | Hammox) :: :ok
-  def defmocks(library: mock_module) do
-    Storage.get_behaviours()
-    |> Enum.each(fn behaviour ->
+  @spec defmocks([behaviour_module], library: library :: Mox | Hammox) :: :ok
+  def defmocks(behaviours, library: mock_module) do
+    Enum.each(behaviours, fn behaviour ->
       mock = String.to_atom("#{behaviour}#{mocks_postfix()}")
       mock_module.defmock(mock, for: behaviour)
 

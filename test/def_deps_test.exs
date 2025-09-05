@@ -130,15 +130,12 @@ defmodule DefDepsTest do
       }
 
       MockStorage
-      |> expect(:get_behaviours, fn ->
-        [TestBehaviour, TestOnlyDefaultBehaviour]
-      end)
       |> expect(:put_callbacks_module, 2, fn behaviour, mock ->
         assert behaviour in Map.keys(expected_implementations)
         assert expected_implementations[behaviour] == mock
       end)
 
-      DefDeps.defmocks(library: Mox)
+      DefDeps.defmocks([TestBehaviour, TestOnlyDefaultBehaviour], library: Mox)
     end
   end
 end
