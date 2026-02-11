@@ -39,3 +39,5 @@ jobs:
       run: mix deps.get
     - name: Run tests
       run: mix coveralls.github
+    - name: Check code
+      run: make analyze-code

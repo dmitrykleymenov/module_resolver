@@ -34,7 +34,7 @@ defmodule ModuleResolver.MixProject do
       {:mox, "~> 1.0", only: @test_envs},
       {:credo, "~> 1.7", only: @test_envs ++ @dev_envs, runtime: false},
       {:dialyxir, "~> 1.4", only: @test_envs ++ @dev_envs, runtime: false},
-      {:excoveralls, "~> 0.18.5", only: @test_envs},
+      {:excoveralls, "~> 0.18.5", only: @test_envs}
     ]
   end
 
@@ -82,7 +82,7 @@ defmodule ModuleResolver.MixProject do
 
   defp aliases do
     [
-      cover: ["coveralls --sort cov:desc"],
+      cover: ["coveralls --sort cov:desc"]
     ]
   end
 end
