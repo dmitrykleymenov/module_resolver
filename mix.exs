@@ -35,7 +35,6 @@ defmodule ModuleResolver.MixProject do
       {:credo, "~> 1.7", only: @test_envs ++ @dev_envs, runtime: false},
       {:dialyxir, "~> 1.4", only: @test_envs ++ @dev_envs, runtime: false},
       {:excoveralls, "~> 0.18.5", only: @test_envs},
-      {:excoveralls_linter, "~> 0.2.1", only: @test_envs}
     ]
   end
 
@@ -84,11 +83,6 @@ defmodule ModuleResolver.MixProject do
   defp aliases do
     [
       cover: ["coveralls --sort cov:desc"],
-      "cover.lint": [
-        "coveralls.lint --required-project-coverage=0.99 --missed-lines-threshold=2 --required-file-coverage=0.9"
-      ],
-      "cover.html": ["coveralls.html"],
-      "cover.detail": ["coveralls.detail --filter"]
     ]
   end
 end
