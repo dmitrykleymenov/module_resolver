@@ -17,15 +17,7 @@ defmodule ModuleResolver.MixProject do
       dialyzer: dialyzer(),
       source_url: @url,
       aliases: aliases(),
-      preferred_cli_env: [
-        cover: :test,
-        "cover.detail": :test,
-        "cover.html": :test,
-        "cover.filter": :test,
-        "cover.lint": :test,
-        credo: :test,
-        dialyzer: :test
-      ],
+      cli: cli(),
       test_coverage: [tool: ExCoveralls]
     ]
   end
@@ -49,7 +41,7 @@ defmodule ModuleResolver.MixProject do
   end
 
   defp description do
-    "Library for modules decoupling"
+    "Library for module decoupling"
   end
 
   defp dialyzer do
@@ -65,6 +57,18 @@ defmodule ModuleResolver.MixProject do
       # для удобного кэширования plt в CI
       plt_local_path: "_build/plt/"
     ]
+  end
+
+  defp cli do
+    [preferred_env: [
+        cover: :test,
+        "cover.detail": :test,
+        "cover.html": :test,
+        "cover.filter": :test,
+        "cover.lint": :test,
+        credo: :test,
+        dialyzer: :test
+      ]]
   end
 
   defp package do
