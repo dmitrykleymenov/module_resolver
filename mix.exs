@@ -17,7 +17,6 @@ defmodule ModuleResolver.MixProject do
       dialyzer: dialyzer(),
       source_url: @url,
       aliases: aliases(),
-      cli: cli(),
       test_coverage: [tool: ExCoveralls]
     ]
   end
@@ -35,7 +34,7 @@ defmodule ModuleResolver.MixProject do
       {:mox, "~> 1.0", only: @test_envs},
       {:credo, "~> 1.7", only: @test_envs ++ @dev_envs, runtime: false},
       {:dialyxir, "~> 1.4", only: @test_envs ++ @dev_envs, runtime: false},
-      {:excoveralls, "~> 0.18.1", only: @test_envs},
+      {:excoveralls, "~> 0.18.5", only: @test_envs},
       {:excoveralls_linter, "~> 0.2.1", only: @test_envs}
     ]
   end
@@ -48,19 +47,19 @@ defmodule ModuleResolver.MixProject do
     [
       flags: [
         :error_handling,
-        :race_conditions,
         :underspecs,
         :unmatched_returns,
         :unknown
       ],
       plt_add_apps: [:ex_unit, :mix],
-      # для удобного кэширования plt в CI
+      # for caching purposes
       plt_local_path: "_build/plt/"
     ]
   end
 
-  defp cli do
-    [preferred_env: [
+  def cli do
+    [
+      preferred_envs: [
         cover: :test,
         "cover.detail": :test,
         "cover.html": :test,
@@ -68,7 +67,8 @@ defmodule ModuleResolver.MixProject do
         "cover.lint": :test,
         credo: :test,
         dialyzer: :test
-      ]]
+      ]
+    ]
   end
 
   defp package do

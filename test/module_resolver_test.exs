@@ -1,6 +1,5 @@
 defmodule ModuleResolverTest do
   use ExUnit.Case
-  alias ModuleResolver.Storage
   alias ModuleResolver.InvalidOptionError
 
   import Mox
@@ -35,7 +34,6 @@ defmodule ModuleResolverTest do
 
   Mox.defmock(ModuleResolverTest.TestNoOptsBehaviour.DefaultImpl, for: TestNoOptsBehaviour)
 
-  Mox.defmock(StorageMock, for: Storage)
   Application.put_env(:module_resolver, :storage, StorageMock)
 
   Mox.defmock(DefaultImplMock, for: TestBehaviour)

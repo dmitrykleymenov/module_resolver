@@ -17,8 +17,6 @@ defmodule ModuleResolver.MocksTest do
     @callback increment(integer()) :: integer()
   end
 
-  Mox.defmock(StorageMock, for: ModuleResolver.Storage)
-
   setup :verify_on_exit!
 
   describe "defmocks/2" do
