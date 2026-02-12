@@ -4,8 +4,7 @@ defmodule ModuleResolverTest do
 
   import Mox
 
-  # Здесь необходимо записать в env переменную отрицательный флаг `компиляции только имплементации по умолчанию`
-  #   для проверки основных сценариев
+  # To prevent direct compilation of the default implementation, the `compile_default_impl` option must be set to false.
   Application.put_env(:module_resolver, :compile_default_impl, false)
 
   defmodule TestBehaviour do
@@ -22,7 +21,7 @@ defmodule ModuleResolverTest do
     @callback increment(integer()) :: integer()
   end
 
-  # Возвращаем стандартное поведение при котором происходит выбор имплементации при компиляции
+  # We return the option value `true` to check for these cases.
   Application.put_env(:module_resolver, :compile_default_impl, true)
 
   defmodule TestOnlyDefaultBehaviour do

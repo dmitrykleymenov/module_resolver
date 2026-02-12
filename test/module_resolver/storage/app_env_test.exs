@@ -9,13 +9,13 @@ defmodule ModuleResolver.Storage.AppEnvTest do
   end
 
   describe "get_implementation_module/1" do
-    test "returns nil if there are no implementations stored" do
-      refute AppEnv.get_implementation_module(__MODULE__)
-    end
-
-    test "returns implementation from storage" do
+    test "returns an implementation from storage" do
       :ok = AppEnv.put_implementation_module(__MODULE__, TestModule)
       assert AppEnv.get_implementation_module(__MODULE__) == TestModule
+    end
+
+    test "returns nil if there are no implementations stored" do
+      refute AppEnv.get_implementation_module(__MODULE__)
     end
   end
 
