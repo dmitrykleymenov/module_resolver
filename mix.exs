@@ -34,12 +34,13 @@ defmodule ModuleResolver.MixProject do
       {:mox, "~> 1.0", only: @test_envs},
       {:credo, "~> 1.7", only: @test_envs ++ @dev_envs, runtime: false},
       {:dialyxir, "~> 1.4", only: @test_envs ++ @dev_envs, runtime: false},
-      {:excoveralls, "~> 0.18.5", only: @test_envs}
+      {:excoveralls, "~> 0.18.5", only: @test_envs},
+      {:ex_doc, "~> 0.14", only: @dev_envs, runtime: false}
     ]
   end
 
   defp description do
-    "Library for module decoupling"
+    "A library for module decoupling"
   end
 
   defp dialyzer do
