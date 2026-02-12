@@ -135,7 +135,7 @@ defmodule BenchTestsImplementation do
 end
 ```
 
-Код benchee:
+benchee code:
 
 ```elixir
 Benchee.run(
