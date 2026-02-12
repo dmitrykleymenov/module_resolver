@@ -2,7 +2,7 @@ defmodule ModuleResolver.Storage do
   alias ModuleResolver.Storage.AppEnv
 
   @moduledoc """
-    Модуль behaviour для хранения имплементаций в runtime
+    Behaviour module for storing implementations at runtime
   """
   @type t :: module()
 

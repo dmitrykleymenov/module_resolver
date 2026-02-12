@@ -1,6 +1,6 @@
 defmodule ModuleResolver do
   @moduledoc """
-    Библиотека для разделения(decoupling) зависимостей на уровне модулей с целью упрощения тестирования
+    A library for decoupling dependencies at the module level to simplify testing.
   """
 
   defmodule InvalidOptionError do
@@ -46,9 +46,6 @@ defmodule ModuleResolver do
       args = Macro.generate_arguments(arity, env.module) |> Macro.escape()
       spec = type_spec |> Macro.escape()
 
-      # quote теперь используется только непосредственно для inject'a кода
-      # Только 2 вещи происходят в контексте модуля behaviour:
-      # добавление спеки и определение функции. Всё остальное происходит в контексте ModuleResolver
       quote bind_quoted: [implementation: implementation, fun_name: fun_name, args: args, spec: spec] do
         Elixir.Kernel.@(spec(unquote(spec)))
 
@@ -59,8 +56,7 @@ defmodule ModuleResolver do
     end
   end
 
-  @spec implementation(behaviour_module(), fallback_impl :: implementation_module()) ::
-          implementation_module()
+  @spec implementation(behaviour_module(), fallback_impl :: implementation_module()) :: implementation_module()
   def implementation(behaviour, fallback_impl) do
     Storage.get_implementation_module(behaviour) || fallback_impl
   end
@@ -72,8 +68,6 @@ defmodule ModuleResolver do
     if compile_only_default?() do
       default_impl
     else
-      # Здесь так же не обойтись без контекста caller'a, так как
-      # проверять какой сервис дернуть необходимо в момент вызова имплементируемой функции
       quote do
         unquote(__MODULE__).implementation(unquote_splicing([implementation_module, default_impl]))
       end

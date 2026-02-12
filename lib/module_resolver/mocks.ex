@@ -1,12 +1,12 @@
 defmodule ModuleResolver.Mocks do
   @moduledoc """
-    Модуль хранящий всю функциональность связанную с моками
+    The module stores all the functionality associated with mocks.
   """
   alias ModuleResolver.Storage
 
   defmodule MockFactory do
     @moduledoc """
-      Поведение для генератора моков
+      The behaviour for mock generator. It should have `defmock/1` function to define mocks
     """
 
     @type t :: module()

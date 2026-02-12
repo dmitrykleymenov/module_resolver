@@ -1,6 +1,6 @@
 defmodule ModuleResolver.Storage.AppEnv do
   @moduledoc """
-    Модуль имплементации ModuleResolver.Storage с использованием Application environment
+    ModuleResolver.Storage implementation module using application environment
   """
 
   @behaviour ModuleResolver.Storage

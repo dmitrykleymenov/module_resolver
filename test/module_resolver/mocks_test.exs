@@ -31,7 +31,7 @@ defmodule ModuleResolver.MocksTest do
       ModuleResolver.Mocks.defmocks([TestBehaviour1, TestBehaviour2], mock_factory: Mox)
     end
 
-    test "defines mocks for behaviours with given postfix" do
+    test "defines mocks for behaviours with the given postfix" do
       expected_implementations = %{
         TestBehaviour1 => ModuleResolver.MocksTest.TestBehaviour1NotAMock,
         TestBehaviour2 => ModuleResolver.MocksTest.TestBehaviour2NotAMock
@@ -44,8 +44,10 @@ defmodule ModuleResolver.MocksTest do
   end
 
   defp expect_storage_put_implementations(expected_implementations) do
+    count = Enum.count(expected_implementations)
+
     StorageMock
-    |> expect(:put_implementation_module, 2, fn behaviour, mock ->
+    |> expect(:put_implementation_module, count, fn behaviour, mock ->
       assert behaviour in Map.keys(expected_implementations)
       assert mock == expected_implementations[behaviour]
     end)
