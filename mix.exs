@@ -60,10 +60,7 @@ defmodule ModuleResolver.MixProject do
     [
       preferred_envs: [
         cover: :test,
-        "cover.detail": :test,
-        "cover.html": :test,
-        "cover.filter": :test,
-        "cover.lint": :test,
+        "coveralls.github": :test,
         credo: :test,
         dialyzer: :test
       ]

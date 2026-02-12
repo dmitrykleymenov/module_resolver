@@ -2,7 +2,7 @@
 
 .PHONY: test-code
 test-code:
-	mix cover.lint
+	mix coveralls.github
 
 .PHONY: analyze-code
 analyze-code:
