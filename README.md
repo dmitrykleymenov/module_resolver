@@ -1,23 +1,22 @@
 # ModuleResolver
 
-Библиотека для разделения(decoupling) зависимостей на уровне модулей с целью упрощения тестирования. Так же предоставляет удобный интерфейс для создания моков этих зависимостей.
+A library for decoupling module-level dependencies to simplify testing. It also provides a convenient interface for creating mocks of these dependencies.
 
-## Добвление `module_resolver`'a
+## Installation
 
-Добавляем библиотеку в `mix.exs` файл:
+Add `:module_resolver` to the list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    ...,
     {:module_resolver, "~> 0.1.0"}
   ]
 end
 ```
 
-## Использование в модулях
+## Usage
 
-Для того чтобы иметь возможность в тестах подменять модуль моками необходимо в модуле с колбеками использовать `use ModuleResolver`, например:
+You may use `ModuleResolver` in a module that is expected to be mocked. For example:
 
 ```elixir
 defmodule MyModule
@@ -33,99 +32,93 @@ defmodule MyModuleDefaultImplementation
   def some_function(counter), do: {:ok, counter}
 end
 ```
+Here `MyModule` uses `ModuleResolver` and specifies the default implementation module through `default_impl` option. After defining a callback in the behaviour module and the function itself in the implementation module, the call to `MyModule.some_function/1` will be delegated to the `MyModuleDefaultImplementation.some_function/1`.
 
-Параметр `default_impl` передает имя модуля, который будет использоваться по умолчанию. Например, результатом вызова `MyModule.some_function(5)` будет результат вызова `MyModuleDefaultImplementation.some_function(5)`.
-
-Параметр `default_impl` можно опустить:
-
-```elixir
-defmodule MyModule
-  use ModuleResolver
-
-  @callback some_function(integer()) :: {:ok, integer()}
-
-  defmodule DefaultImpl
-    @behaviour MyModule
-  
-    @impl true
-    def some_function(counter), do: {:ok, counter}
-  end
-end
-```
-
-В таком случае модуль по умолчанию будет формироваться из неймспейса модуля(в нашем случае `MyModule`) и `DefaultImpl`. Т.е в примере выше это будет `MyModule.DefaultImpl`. Это удобно для быстрого разделения зависимостей в существующих модулях.
-Например, имеем изначально стандартный модуль:
+To define mocks in tests you may do this in the `test_helper.exs` file:
 
 ```elixir
-defmodule MyModule
-  @spec some_function(integer()) :: {:ok, integer()}
-  def some_function(counter), do: {:ok, counter}
-end
-```
-Для того чтобы использовать его Mock в тестах нам необходимо сделать всего 4 небольших шага:
-1. Добавить `use ModuleResolver`
-2. Существующие спеки перенести в callback'и
-3. Все определения функций завернуть в дополнительный модуль `DefaultImpl`
-4. В `DefaultImpl` прописать `@behaviour MyModule` в начало и `@impl true` у каждой функции
-
-В итоге получаем:
-
-```elixir
-defmodule MyModule
-  use ModuleResolver
-
-  @callback some_function(integer()) :: {:ok, integer()}
-
-  defmodule DefaultImpl
-    @behaviour MyModule
-  
-    @impl true
-    def some_function(counter), do: {:ok, counter}
-  end
-end
+  ModuleResolver.Mocks.defmocks([MyModule], mock_factory: Mox, postfix: "Mock")
 ```
 
-## Использование в тестах
+The first agrument here is a list of behaviour modules and the second one is `options`. There are two possible options:
 
-После того как модули были настроены, можно использовать их моки в тестах. Для этого необходимо в `test_helper.exs` указать список модулей первым параметром и двумя опциями: 
-- `mock_factory` с помощью которой будут созданы моки 
-- `postfix`, который будет добавлен к названию модуля behaviour чтобы получить имя mock модуля
+- `mock_factory`, implementation of `BeamMetrics.Mocks.MockFactory` behaviour. It can be `Mox` or `Hammox` as well. 
+- `postfix`, will be added to the end of the behaviour module name to create a mock module name. Can be omitted. By default: `"Mock'`
 
-```elixir
-  ModuleResolver.Mocks.defmocks([MyModule, MyAnotherModule], mock_factory: Mox, postfix: "Mock")
-```
-В результате этой команды будут созданы моки `MyModuleMock` и `MyAnotherModuleMock`, которые будут автоматически вызываться при каждом вызове любой функции из модулей `MyModule` и  `MyAnotherModule` соответственно.
-
-С помощь обязательной опции `mock_factory` необходимо передать модуль генерации моков. Модуль генерации должен имплементировать поведение `ModuleResolver.Mocks.MockFactory`. Можно так же использовать `Mox` или `Hammox`.
-
-Опцию `postfix` можно опустить, тогда она по умолчанию будет равна `Mock`
-
-## Конфигурация
-
-По умолчанию модуль имплементации будет выбираться в момент компиляции, при этом на этом этапе функции имплементации будут "вмонтированы" в функцию поведения. В итоге получится нечто вроде:
-
-```elixir
-defmodule MyModule
-  use ModuleResolver, default_impl: MyModuleDefaultImplementation
-  @callback some_function(integer()) :: {:ok, integer()}
-
-  def some_function(count), do: MyModuleDefaultImplementation.some_function(count)
-end
-```
-
-Относительно решенения без `module_resolver`a overhead составляет лишь 1 дополнительный вызов функции в стек вызовов.
-
-Использование модулей в тестах требует runtime определения модуля имплементации, для этого необходимо сконфигурировать `module_resolver`, передав параметр `compile_default_impl: false`. Например, в конфиг `test.exs` добавить:
+To use these mocks, you need to disable implementation mounting at compile time. Add the following to the `test.exs` file:
 
 ```elixir
 config :module_resolver, compile_default_impl: false
 ```
 
-В таком случае поведение будет выбираться каждый раз в момент вызова функции из модуля behaviour
+Now call to `MyModule.some_function/1` in test environment wil be delegated to `MyModuleMock.some_function/1`. In other environments the module under `default_impl` will be compiled into behaviour.
+
+## Compile-time/runtime
+
+By default, implementation is compiled into the behaviour module, and after compilation, the result roughly looks like:
+
+```Elixir
+defmodule MyModule
+  def some_function(count), do: MyModuleDefaultImplementation.some_function(count)
+end
+```
+
+When `compile_default_impl: false` is set, the implementation is determined at runtime. If there is no mock for a given behavior, a default implementation will be used, so integration tests can use the actual implementation without defining mocks.
+
+## Other use cases
+
+The `default_impl` option may be omitted:
+
+```elixir
+defmodule MyModule
+  use ModuleResolver
+
+  @callback some_function(integer()) :: {:ok, integer()}
+
+  defmodule DefaultImpl
+    @behaviour MyModule
+  
+    @impl true
+    def some_function(counter), do: {:ok, counter}
+  end
+end
+```
+
+In this case default implementation will be set as `__MODULE__.DefaultImpl`. In the code above it will be `MyModule.DefaultImpl`. It's helpful when you need to decouple existed modules. For example, we have a module such as:
+
+```elixir
+defmodule MyExistedModule
+  @spec existed_function(integer()) :: {:ok, integer()}
+  def existed_function(counter), do: {:ok, counter}
+end
+```
+
+To use `MyExistedModuleMock` instead of `MyExistedModule` in tests, you need to follow 5 steps:
+
+1. Add `use ModuleResolver`
+2. Replace `@spec` with `@callback`.
+3. Wrap all function definitions in the `DefaultImpl` module
+4. Add `@behaviour MyExistedModule` to the top of the `DefaultImpl` module and `@impl true` to each function.
+5. Add `MyExistedModule` to the mocks list in `ModuleResolver.Mocks.defmocks/2`
+
+As result:
+
+```elixir
+defmodule MyExistedModule
+  use ModuleResolver
+
+  @callback existed_function(integer()) :: {:ok, integer()}
+
+  defmodule DefaultImpl
+    @behaviour MyExistedModule
+  
+    @impl true
+    def existed_function(counter), do: {:ok, counter}
+  end
+end
+```
 
 ## Benchmarking
-
-Сравнение времени выполнения на примере следующих модулей:
 
 ```elixir
 defmodule BenchTestsBehaviour do
@@ -165,7 +158,7 @@ Benchee.run(
 )
 ```
 
-Результаты при настройке конфигурации `config :module_resolver, compile_default_impl: false`:
+Results with `config :module_resolver, compile_default_impl: false`:
 
 ```bash
 Name                                 ips        average  deviation         median         99th %
@@ -183,7 +176,7 @@ implementation direct call        59.52 MB
 behaviour call                    65.63 MB - 1.10x memory usage +6.10 MB
 ```
 
-Результаты при настройке конфигурации `config :module_resolver, compile_default_impl: true`:
+Results with `config :module_resolver, compile_default_impl: true`:
 
 ```bash
 Name                                 ips        average  deviation         median         99th %
@@ -199,6 +192,4 @@ Memory usage statistics:
 Name                          Memory usage
 implementation direct call        59.52 MB
 behaviour call                    59.52 MB - 1.00x memory usage -0.00018 MB
-
-**All measurements for memory usage were the same**
 ```
