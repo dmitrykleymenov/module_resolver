@@ -9,7 +9,7 @@ defmodule ModuleResolver.MixProject do
     [
       app: :module_resolver,
       version: "0.1.0",
-      elixir: "~> 1.12",
+      elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       package: package(),
@@ -60,10 +60,7 @@ defmodule ModuleResolver.MixProject do
     [
       preferred_envs: [
         cover: :test,
-        "cover.detail": :test,
-        "cover.html": :test,
-        "cover.filter": :test,
-        "cover.lint": :test,
+        "coveralls.github": :test,
         credo: :test,
         dialyzer: :test
       ]
