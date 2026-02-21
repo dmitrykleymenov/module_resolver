@@ -19,13 +19,13 @@ end
 You may use `ModuleResolver` in a module that is expected to be mocked. For example:
 
 ```elixir
-defmodule MyModule
+defmodule MyModule do
   use ModuleResolver, default_impl: MyModuleDefaultImplementation
 
   @callback some_function(integer()) :: {:ok, integer()}
 end
 
-defmodule MyModuleDefaultImplementation
+defmodule MyModuleDefaultImplementation do
   @behaviour MyModule
   
   @impl true
@@ -58,7 +58,7 @@ Now call to `MyModule.some_function/1` in test environment wil be delegated to `
 By default, implementation is compiled into the behaviour module, and after compilation, the result roughly looks like:
 
 ```Elixir
-defmodule MyModule
+defmodule MyModule do
   def some_function(count), do: MyModuleDefaultImplementation.some_function(count)
 end
 ```
@@ -70,12 +70,12 @@ When `compile_default_impl: false` is set, the implementation is determined at r
 The `default_impl` option may be omitted:
 
 ```elixir
-defmodule MyModule
+defmodule MyModule do
   use ModuleResolver
 
   @callback some_function(integer()) :: {:ok, integer()}
 
-  defmodule DefaultImpl
+  defmodule DefaultImpl do
     @behaviour MyModule
   
     @impl true
@@ -87,7 +87,7 @@ end
 In this case default implementation will be set as `__MODULE__.DefaultImpl`. In the code above it will be `MyModule.DefaultImpl`. It's helpful when you need to decouple existed modules. For example, we have a module such as:
 
 ```elixir
-defmodule MyExistedModule
+defmodule MyExistedModule do
   @spec existed_function(integer()) :: {:ok, integer()}
   def existed_function(counter), do: {:ok, counter}
 end
@@ -104,12 +104,12 @@ To use `MyExistedModuleMock` instead of `MyExistedModule` in tests, you need to 
 As result:
 
 ```elixir
-defmodule MyExistedModule
+defmodule MyExistedModule do
   use ModuleResolver
 
   @callback existed_function(integer()) :: {:ok, integer()}
 
-  defmodule DefaultImpl
+  defmodule DefaultImpl do
     @behaviour MyExistedModule
   
     @impl true
